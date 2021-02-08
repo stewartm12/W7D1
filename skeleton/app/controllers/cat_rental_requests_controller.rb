@@ -1,4 +1,10 @@
 class CatRentalRequestsController < ApplicationController
+  before_action :cat_owner?, only: [:approve, :deny]  
+
+  def cat_owner?
+    redirect_to cats_url unless current_user.cats.include?(self)
+  end
+
   def approve
     current_cat_rental_request.approve!
     redirect_to cat_url(current_cat)
@@ -7,6 +13,7 @@ class CatRentalRequestsController < ApplicationController
   def create
     @rental_request = CatRentalRequest.new(cat_rental_request_params)
     if @rental_request.save
+      self.requester = current_user
       redirect_to cat_url(@rental_request.cat)
     else
       flash.now[:errors] = @rental_request.errors.full_messages
