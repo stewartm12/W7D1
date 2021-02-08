@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+    before_action :require_logged_out, only: [:new, :create]
+    before_action :require_logged_in, only: [:index, :show]
 
     def new
         @user = User.new
@@ -15,4 +17,8 @@ class UsersController < ApplicationController
         end
     end
 
+    private
+    def user_params 
+        params.require(:user).permit(:user_name, :password)
+    end
 end
